@@ -1,0 +1,1 @@
+"""Browser Control MCP package."""

@@ -1,54 +1,51 @@
-# Browser-control---MCP-server
-## Usage directive:
-The Model Context Protocol allows applications to provide context for LLMs in a standardized way, separating the concerns of providing context from the actual LLM interaction. This Python SDK implements the full MCP specification, making it easy to:
+# Browser Control MCP Server
 
-- Build MCP clients that can connect to any MCP server
-- Create MCP servers that expose resources, prompts and tools
-- Use standard transports like stdio, SSE, and Streamable HTTP
-- Handle all MCP protocol messages and lifecycle events
+A Playwright-powered [Model Context Protocol](https://modelcontextprotocol.io/) server for controlled browser navigation, interaction, and Markdown content extraction.
 
-Run the following code in your Python IDE (after basic installations like installing [uv](https://docs.astral.sh/uv/) and Claude Desktop :
-```python
-# browser_control.py
-from mcp.server.fastmcp import FastMCP
-import webbrowser
+## Features
 
-# Create an MCP server for browser control
-mcp = FastMCP("Browser Control")
+- Reusable Chromium context managed for the MCP server lifetime
+- Navigation, history controls, clicking, typing, hovering, and drag-and-drop
+- Clean HTML-to-Markdown extraction for efficient LLM context
+- Optional `playwright-stealth` integration
+- MCP stdio transport for Claude Desktop, Cursor, and MCP Inspector
 
-@mcp.tool()
-def open_in_chrome(url: str) -> str:
-    """Open a URL in Chrome browser"""
-    try:
-        # Try to open in Chrome specifically
-        chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s'  # Windows path
-        webbrowser.get(chrome_path).open(url)
-        return f"Successfully opened {url} in Chrome"
-    except Exception as e:
-        # Fall back to default browser if Chrome isn't found
-        webbrowser.open(url)
-        return f"Opened {url} in default browser (Chrome not found)"
+## Install
 
-# For direct execution
-if __name__ == "__main__":
-    mcp.run()
-```
+Requires Python 3.10+.
 
-Run the following command in your terminal, opened in the working directory:
 ```bash
-uv run mcp install {name of the file}
-```
-For example, if your file name is saved as browser_control.py, use :
-```bash
-uv run mcp install browser_control.py
+uv sync
+uv run playwright install chromium
 ```
 
-Alternatively, you can test it with the MCP Inspector:
+Or with pip:
+
 ```bash
-mcp dev browser_control.py
+pip install -r requirements.txt
+playwright install chromium
 ```
 
-Open your Claude Desktop application and once the MCP server is connected, type the following:
+## Run
+
 ```bash
-open_in_chrome("https://medium.com/@vidyarthy.shuvam")
+uv run main.py
 ```
+
+The original launcher remains available:
+
+```bash
+uv run browser_control.py
+```
+
+For MCP Inspector:
+
+```bash
+mcp dev main.py
+```
+
+## Available tools
+
+`navigate`, `extract_content`, `click_element`, `type_text`, `hover_element`, `drag_element`, `go_back`, `go_forward`, and `execute_javascript`.
+
+Use only with sites and accounts you are authorized to automate. JavaScript evaluation is intentionally powerful; only pass trusted scripts.
